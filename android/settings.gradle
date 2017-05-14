@@ -1,0 +1,3 @@
+rootProject.name = 'Caluc'
+
+include ':app'
