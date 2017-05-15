@@ -14,7 +14,6 @@ export default class Game extends Component {
   handleUpdate = () => {
     this.setState({
       ballPosition: this.body.body.position,
-      ballAngle: this.body.body.angle,
     });
   }
 
@@ -23,8 +22,8 @@ export default class Game extends Component {
     const dimensions = Dimensions.get('window');
 
     const ground = Matter.Bodies.rectangle(
-      dimensions.width / 2, dimensions.height + 5,
-      dimensions.width, 5,
+      dimensions.width / 2, dimensions.height - 50,
+      dimensions.width, 75,
       {
         isStatic: true,
       },
@@ -39,7 +38,7 @@ export default class Game extends Component {
     );
 
     const leftWall = Matter.Bodies.rectangle(
-      -75, dimensions.height / 2,
+      20, dimensions.height / 2,
       1, dimensions.height,
       {
         isStatic: true,
@@ -61,12 +60,11 @@ export default class Game extends Component {
     super(props);
 
     this.state = {
-      gravity: 1,
+      gravity: 10,
       ballPosition: {
         x: 0,
         y: 0,
       },
-      ballAngle: 0,
     };
   }
 
@@ -77,36 +75,34 @@ export default class Game extends Component {
       onMoveShouldSetPanResponder: (evt, gestureState) => true,
       onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
       onPanResponderGrant: (evt, gestureState) => {
-        this.setState({
-          gravity: 0,
-        });
+        Matter.Body.setVelocity(this.body.body, {x: 0, y: -40});
+        //this.setState({
+          //gravity: 0,
+        //});
 
-        Matter.Body.setAngularVelocity(this.body.body, 0);
-        Matter.Body.setVelocity(this.body.body, {x: 0, y: 0});
+        //Matter.Body.setAngularVelocity(this.body.body, 0);
+        //Matter.Body.setVelocity(this.body.body, {x: 0, y: 0});
 
-        this.startPosition = {
-          x: this.body.body.position.x,
-          y: this.body.body.position.y,
-        }
+        //this.startPosition = {
+          //x: this.body.body.position.x,
+          //y: this.body.body.position.y,
+        //}
       },
       onPanResponderMove: (evt, gestureState) => {
-        Matter.Body.setPosition(this.body.body, {
-          x: this.startPosition.x + gestureState.dx,
-          y: this.startPosition.y + gestureState.dy,
-        });
+        //Matter.Body.setPosition(this.body.body, {
+          //x: this.startPosition.x + gestureState.dx,
+          //y: this.startPosition.y + gestureState.dy,
+        //});
       },
       onPanResponderRelease: (evt, gestureState) => {
-        this.setState({
-          gravity: 1,
-        });
-
-        Matter.Body.applyForce(this.body.body, {
-          x: this.body.body.position.x,
-          y: this.body.body.position.y,
-        }, {
-          x: gestureState.vx,
-          y: gestureState.vy,
-        });
+        Matter.Body.setVelocity(this.body.body, {x: 0, y: 0});
+        //Matter.Body.applyForce(this.body.body, {
+          //x: this.body.body.position.x,
+          //y: this.body.body.position.y,
+        //}, {
+          //x: 0,
+          //y: 30,
+        //});
       },
     });
   }
@@ -119,7 +115,6 @@ export default class Game extends Component {
       transform: [
         { translateX: this.state.ballPosition.x },
         { translateY: this.state.ballPosition.y },
-        { rotate: (this.state.ballAngle * (180 / Math.PI)) + 'deg'}
       ],
     };
   }
@@ -139,12 +134,12 @@ export default class Game extends Component {
             gravity={{ x: 0, y: this.state.gravity, scale: 0.001 }}
           >
             <Body
-              shape="circle"
-              args={[0, dimensions.height - 75, 75]}
-              density={0.003}
-              friction={1}
+              shape="rectangle"
+              args={[30, dimensions.height - 125, 75, 75]}
+              density={1}
+              friction={0}
               frictionStatic={0}
-              restitution={0.5}
+              restitution={0}
               ref={(b) => { this.body = b; }}
             >
               <View
